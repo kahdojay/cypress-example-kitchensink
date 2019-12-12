@@ -8,39 +8,18 @@
     "cypress"
   ],
   "scripts": {
-    "build": "npm run lint && npm run types && npm run stop-only",
-    "start": "serve --listen ${PORT:-8080}",
-    "start:ci": "serve --no-clipboard --listen ${PORT:-8080}",
-    "start:ci:windows": "serve --no-clipboard --listen 8080",
-    "dev": "npm start",
-    "types": "tsc --noEmit",
-    "test": "npm start & cypress run",
-    "pretest": "npm run lint && npm run types",
-    "print-env": "print-env",
-    "lint": "eslint --fix cypress/**/*.js app/assets/js/scripts.js",
-    "lint:yaml": "yamllint '*.yml' 'basic/*.yml' .buildkite/pipeline.yml .semaphore/semaphore.yml '.github/workflows/*.yml'",
-    "colon:names": "colon-names",
-    "e2e": "cypress run",
-    "e2e:chrome": "cypress run --browser chrome",
-    "e2e:record": "cypress run --record",
-    "e2e:record:parallel": "cypress run --record --parallel",
-    "test:ci": "run-p --race start:ci e2e",
-    "test:ci:chrome": "run-p --race start:ci e2e:chrome",
-    "test:ci:record": "run-p --race start:ci e2e:record",
-    "test:ci:record:windows": "run-p --race start:ci:windows e2e:record",
-    "test:ci:record:parallel": "run-p --race start:ci e2e:record:parallel",
-    "cy:verify": "cypress verify",
-    "cy:version": "cypress version",
-    "cy:run": "cypress run",
-    "cy:run:record": "cypress run --record",
-    "cy:open": "cypress open",
-    "local:open": "start-test 8080 cy:open",
-    "local:run": "start-test 8080 cy:run",
-    "local:run:record": "start-test 8080 cy:run:record",
-    "stop-only": "stop-only -f cypress/integration",
-    "warn-only": "stop-only -f cypress/integration --warn",
-    "ci:set-port": "node ./scripts/set-port",
-    "semantic-release": "semantic-release"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --testPathIgnorePatterns=\"src/integration\"",
+    "test:scripts": "jest scripts/",
+    "test:lambda": "jest --testPathPattern=\"amplify/backend/function\" --config=amplify/backend/function/jest.config.json",
+    "test:integration": "react-scripts test src/integration",
+    "test:all": "jest scripts/ && yarn test:lambda && react-scripts test",
+    "ci:cypress": "cypress run --reporter mochawesome --reporter-options \"reportDir=cypress/report/mochawesome-report,overwrite=false,html=false,json=true,timestamp=mmddyyyy_HHMMss\"",
+    "ci:e2e": "start-server-and-test start 3000 ci:cypress",
+    "eject": "react-scripts eject",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "data-loader": "node ./scripts/src/data-loader/main.js"
   },
   "repository": {
     "type": "git",
@@ -75,11 +54,5 @@
   },
   "engines": {
     "node": ">=4"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run warn-only && npm run lint:yaml",
-      "pre-push": "npm run stop-only && npm run lint:yaml"
-    }
   }
 }
